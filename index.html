@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지구 정화 대작전 : 가원, 햄도리, 루루의 차원 모험</title>
+    <meta name="description" content="잿빛으로 오염된 지구를 정화하기 위한 가원, 햄도리, 루루의 협동 퍼즐 액션 어드벤처 게임">
+    <!-- Open Graph & Social Sharing Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="지구 정화 대작전 : 가원 × 햄도리 × 루루의 차원 모험">
+    <meta property="og:description" content="잿빛 오염 지구를 정화하기 위한 세 친구의 협동 퍼즐 액션 어드벤처 웹 게임!">
+    <meta property="og:image" content="Assets/가원.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="지구 정화 대작전">
+    <meta name="twitter:description" content="가원, 햄도리, 루루와 함께 오염된 지구를 정화하고 디제잉 축제를 즐기세요!">
+    <meta name="twitter:image" content="Assets/가원.png">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Header Navigation -->
+        <header class="game-header">
+            <div class="logo-group">
+                <span class="logo-icon">🌱</span>
+                <div class="logo-text">
+                    <h1>지구 정화 대작전</h1>
+                    <span class="subtitle">가원 × 햄도리 × 루루의 차원 여행</span>
+                </div>
+            </div>
+
+            <!-- Global Purification Meter -->
+            <div class="purification-bar-container">
+                <div class="meter-label">
+                    <span>지구 정화도</span>
+                    <span id="purificationPercent">0%</span>
+                </div>
+                <div class="meter-track">
+                    <div id="purificationFill" class="meter-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+
+            <div class="header-controls">
+                <button id="btnMode" class="btn-secondary" title="플레이 모드 변경">
+                    🎮 <span id="modeText">싱글 스위칭 (1P)</span>
+                </button>
+                <button id="btnHelp" class="btn-icon" title="조작 가이드">❓</button>
+                <button id="btnAudio" class="btn-icon" title="사운드 켜기/끄기">🔊</button>
+                <button id="btnRestart" class="btn-icon" title="스테이지 재시작">🔄</button>
+            </div>
+        </header>
+
+        <!-- Main Viewport -->
+        <main class="game-container">
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="1280" height="720"></canvas>
+                
+                <!-- Story Dialog / Cutscene Overlay -->
+                <div id="storyOverlay" class="overlay active">
+                    <div class="story-card glass-panel">
+                        <div class="story-header">
+                            <span id="storyChapterTag" class="chapter-tag">[기] 도입부</span>
+                            <h2 id="storyTitle">잿빛 지구로의 불시착</h2>
+                        </div>
+                        <div class="story-body">
+                            <div class="story-illustration">
+                                <canvas id="cutsceneCanvas" width="400" height="220"></canvas>
+                            </div>
+                            <p id="storyText">
+                                서로 다른 세계에 살던 가원, 햄도리, 루루가 우연히 차원의 문을 넘어 심각하게 오염된 잿빛 행성 '지구'에 함께 떨어지게 됩니다! 원래 세계로 돌아가려면 이 오염된 공장 지구를 정화해야 합니다!
+                            </p>
+                        </div>
+                        <div class="story-footer">
+                            <button id="btnStartGame" class="btn-primary glow">모험 시작하기 ✨</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Over / Stage Clear Overlay -->
+                <div id="modalOverlay" class="overlay hidden">
+                    <div class="modal-card glass-panel">
+                        <h2 id="modalTitle">스테이지 클리어!</h2>
+                        <p id="modalMessage">지구가 조금씩 푸른 빛을 되찾고 있습니다.</p>
+                        <div id="modalActions" class="modal-actions">
+                            <button id="btnNextStage" class="btn-primary">다음 단계로 ▶</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ending DJ Party Screen Overlay -->
+                <div id="djOverlay" class="overlay hidden">
+                    <div class="dj-card glass-panel">
+                        <div class="dj-header">
+                            <span class="dj-badge">🎉 STAGE CLEAR & EARTH RESTORED 🎉</span>
+                            <h2>승리의 디제잉 축제!</h2>
+                        </div>
+                        <div class="dj-visualizer">
+                            <canvas id="djCanvas" width="600" height="280"></canvas>
+                        </div>
+                        <p class="dj-desc">
+                            가원의 힙한 디제잉 비트에 맞춰 햄도리와 루루가 신나게 춤을 춥니다! 지구는 다시 맑고 생명력 넘치는 푸른 행성이 되었습니다!
+                        </p>
+                        <div class="dj-controls">
+                            <button id="btnDjEffect1" class="btn-dj">🎵 비트 드랍</button>
+                            <button id="btnDjEffect2" class="btn-dj">✨ 미러볼 폭발</button>
+                            <button id="btnDjEffect3" class="btn-dj">🌸 꽃가루 레이저</button>
+                            <button id="btnReplay" class="btn-primary">다시 플레이하기 🔄</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Gameplay HUD -->
+            <section class="game-hud">
+                <!-- Character Selection & Status -->
+                <div class="character-cards">
+                    <!-- Gawon Card -->
+                    <div id="card-gawon" class="char-card active" data-char="gawon">
+                        <div class="char-avatar avatar-gawon">
+                            <span class="badge-num">1</span>
+                            <div class="portrait-img">
+                                <img src="Assets/가원.png" alt="가원" class="avatar-img">
+                            </div>
+                        </div>
+                        <div class="char-info">
+                            <div class="char-header">
+                                <span class="char-name">가원</span>
+                                <span class="char-role">리더 / 제어</span>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-item">
+                                    <span class="skill-key">[E]</span>
+                                    <span class="skill-name">아이컨택</span>
+                                    <span class="skill-desc">10초간 적 무력화</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-key">[R]</span>
+                                    <span class="skill-name">노트북 연결</span>
+                                    <span class="skill-desc">기계 및 메인콘솔 제어</span>
+                                </div>
+                            </div>
+                            <div class="cooldown-bar"><div id="cd-gawon" class="cd-fill"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Hamdori Card -->
+                    <div id="card-hamdori" class="char-card" data-char="hamdori">
+                        <div class="char-avatar avatar-hamdori">
+                            <span class="badge-num">2</span>
+                            <div class="portrait-img">
+                                <img src="Assets/햄도리.png" alt="햄도리" class="avatar-img">
+                            </div>
+                        </div>
+                        <div class="char-info">
+                            <div class="char-header">
+                                <span class="char-name">햄도리</span>
+                                <span class="char-role">벽타기 / 유인</span>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-item">
+                                    <span class="skill-key">[↑/벽]</span>
+                                    <span class="skill-name">벽 매달리기</span>
+                                    <span class="skill-desc">높은 환기탑/벽 조작</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-key">[E]</span>
+                                    <span class="skill-name">어그로 유인</span>
+                                    <span class="skill-desc">경비원 시선 끌기</span>
+                                </div>
+                            </div>
+                            <div class="cooldown-bar"><div id="cd-hamdori" class="cd-fill"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Lulu Card -->
+                    <div id="card-lulu" class="char-card" data-char="lulu">
+                        <div class="char-avatar avatar-lulu">
+                            <span class="badge-num">3</span>
+                            <div class="portrait-img">
+                                <img src="Assets/루루.png" alt="루루" class="avatar-img">
+                            </div>
+                        </div>
+                        <div class="char-info">
+                            <div class="char-header">
+                                <span class="char-name">루루</span>
+                                <span class="char-role">정화 / 회복</span>
+                            </div>
+                            <div class="skill-group">
+                                <div class="skill-item">
+                                    <span class="skill-key">[E]</span>
+                                    <span class="skill-name">샬라라 회전</span>
+                                    <span class="skill-desc">주변 3m 오염 정화</span>
+                                </div>
+                                <div class="skill-item">
+                                    <span class="skill-key">[R]</span>
+                                    <span class="skill-name">꽃 개화</span>
+                                    <span class="skill-desc">은방울꽃 식생 복구</span>
+                                </div>
+                            </div>
+                            <div class="cooldown-bar"><div id="cd-lulu" class="cd-fill"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Slot Panel -->
+                <div class="inventory-panel glass-panel">
+                    <h3>획득한 아이템</h3>
+                    <div class="inventory-slots">
+                        <div id="item-seed" class="inv-slot" title="은방울꽃 씨앗">
+                            <span class="inv-icon">🌱</span>
+                            <span class="inv-name">은방울 씨앗</span>
+                            <span id="count-seed" class="inv-badge">0</span>
+                        </div>
+                        <div id="item-cable" class="inv-slot" title="15인치 노트북 연결 케이블">
+                            <span class="inv-icon">🔌</span>
+                            <span class="inv-name">노트북 케이블</span>
+                            <span id="count-cable" class="inv-badge">0</span>
+                        </div>
+                        <div id="item-battery" class="inv-slot" title="정화 배터리">
+                            <span class="inv-icon">🔋</span>
+                            <span class="inv-name">정화 배터리</span>
+                            <span id="count-battery" class="inv-badge">0</span>
+                        </div>
+                        <div id="item-ampoule" class="inv-slot" title="은방울꽃 앰플">
+                            <span class="inv-icon">🧪</span>
+                            <span class="inv-name">은방울 앰플</span>
+                            <span id="count-ampoule" class="inv-badge">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Keybindings / Controls Modal -->
+        <div id="helpModal" class="modal-overlay hidden">
+            <div class="help-card glass-panel">
+                <div class="help-header">
+                    <h2>🎮 조작 안내 & 플레이 팁</h2>
+                    <button id="btnCloseHelp" class="btn-close">✖</button>
+                </div>
+                <div class="help-body">
+                    <div class="control-section">
+                        <h3>[ 싱글플레이 (1P 스위칭 모드) ]</h3>
+                        <ul>
+                            <li><kbd>←</kbd> <kbd>→</kbd> 또는 <kbd>A</kbd> <kbd>D</kbd> : 이동 (좌/우)</li>
+                            <li><kbd>Space</kbd> 또는 <kbd>W</kbd> 또는 <kbd>↑</kbd> : 점프</li>
+                            <li><kbd>1</kbd>, <kbd>2</kbd>, <kbd>3</kbd> : 캐릭터 교체 (1: 가원, 2: 햄도리, 3: 루루)</li>
+                            <li><kbd>E</kbd> : 캐릭터 특수 스킬 (가원: 아이컨택 / 햄도리: 어그로 유인 / 루루: 샬라라 회전)</li>
+                            <li><kbd>R</kbd> 또는 <kbd>F</kbd> : 아이템 사용 / 장치 조작 (노트북 연결, 꽃 심기, 배터리 삽입)</li>
+                        </ul>
+                    </div>
+                    <div class="control-section">
+                        <h3>[ 멀티플레이 (3인 협동 모드) ]</h3>
+                        <ul>
+                            <li><b>가원 (P1):</b> <kbd>A</kbd>/<kbd>D</kbd> 이동, <kbd>W</kbd> 점프, <kbd>F</kbd> 아이컨택</li>
+                            <li><b>햄도리 (P2):</b> <kbd>←</kbd>/<kbd>→</kbd> 이동, <kbd>↑</kbd> 점프/벽타기, <kbd>L</kbd> 어그로 유인</li>
+                            <li><b>루루 (P3):</b> <kbd>J</kbd>/<kbd>L</kbd> 이동, <kbd>I</kbd> 점프, <kbd>K</kbd> 샬라라 회전</li>
+                        </ul>
+                    </div>
+                    <div class="character-tips">
+                        <h3>🌟 캐릭터 시너지 퍼즐 팁</h3>
+                        <p><b>햄도리:</b> 높은 벽이나 환기탑을 탈 수 있어 공중에 위치한 '정화 배터리'를 획득할 수 있습니다. 경비원들의 시선을 끌어 가원과 루루가 통과할 수 있게 돕습니다.</p>
+                        <p><b>가원:</b> '아이컨택' 스킬로 경비원을 10초간 무력화시키며, 15인치 노트북 케이블을 이용해 보안 콘솔을 조작합니다.</p>
+                        <p><b>루루:</b> '샬라라 회전'으로 주변 3m 독성 폐수와 매연을 맑고 푸른 꽃밭으로 정화하고 은방울꽃 앰플을 수집합니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/entities.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
