@@ -293,9 +293,20 @@ body {
     animation: glowPulse 2s infinite;
 }
 
+.btn-primary.glow-red {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.4);
+    animation: glowRedPulse 2s infinite;
+}
+
 @keyframes glowPulse {
     0%, 100% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.5); }
     50% { box-shadow: 0 0 32px rgba(16, 185, 129, 0.9); }
+}
+
+@keyframes glowRedPulse {
+    0%, 100% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 0 32px rgba(239, 68, 68, 0.9); }
 }
 
 /* DJ Party Screen */

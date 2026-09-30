@@ -156,8 +156,9 @@ class GameRenderer {
 
         // Background Factory Silhouette
         ctx.fillStyle = `rgba(15, 23, 42, ${0.8 - purPercent * 0.4})`;
-        for (let i = 0; i < 6; i++) {
-            const bx = (i * 350 - cameraX * 0.3) % 2100;
+        const numSilhouettes = Math.ceil((map.cols * map.tileSize) / 320) + 2;
+        for (let i = 0; i < numSilhouettes; i++) {
+            const bx = i * 320 - (cameraX * 0.3) % 320;
             ctx.fillRect(bx, height - 380, 120, 380);
             // Smokestacks
             ctx.fillRect(bx + 40, height - 480, 40, 100);
@@ -192,16 +193,34 @@ class GameRenderer {
                         ctx.strokeRect(tx, ty, map.tileSize, map.tileSize);
                     }
                 } else if (tile === 2) {
-                    // Toxic Wastewater Puddle
-                    ctx.fillStyle = isPurified ? '#38bdf8' : '#a855f7';
-                    ctx.fillRect(tx, ty + 15, map.tileSize, map.tileSize - 15);
+                    // Toxic Wastewater Puddle (DANGER HAZARD)
+                    if (isPurified) {
+                        ctx.fillStyle = '#38bdf8';
+                        ctx.fillRect(tx, ty + 12, map.tileSize, map.tileSize - 12);
+                    } else {
+                        // Poison Toxic Water Visuals
+                        const toxicGrad = ctx.createLinearGradient(tx, ty + 12, tx, ty + map.tileSize);
+                        toxicGrad.addColorStop(0, '#c026d3'); // Toxic Magenta
+                        toxicGrad.addColorStop(1, '#581c87'); // Deep Poison Purple
+                        ctx.fillStyle = toxicGrad;
+                        ctx.fillRect(tx, ty + 12, map.tileSize, map.tileSize - 12);
 
-                    // Toxic bubbles animation
-                    ctx.fillStyle = isPurified ? '#e0f2fe' : '#e9d5ff';
-                    const bubbleY = ty + 20 + Math.sin(time * 5 + c) * 4;
-                    ctx.beginPath();
-                    ctx.arc(tx + 20, bubbleY, 4, 0, Math.PI * 2);
-                    ctx.fill();
+                        // Glowing poison liquid top rim
+                        ctx.fillStyle = '#f0abfc';
+                        ctx.fillRect(tx, ty + 12, map.tileSize, 3);
+
+                        // Animated Toxic bubbles & danger symbol
+                        ctx.fillStyle = '#fae8ff';
+                        const bubbleY = ty + 20 + Math.sin(time * 6 + c * 1.5) * 5;
+                        ctx.beginPath();
+                        ctx.arc(tx + 20, bubbleY, 4, 0, Math.PI * 2);
+                        ctx.fill();
+
+                        if (c % 3 === 0) {
+                            ctx.font = '10px Outfit';
+                            ctx.fillText('☠️', tx + 14, ty + 34);
+                        }
+                    }
                 } else if (tile === 4) {
                     // Locked Security Gate
                     ctx.fillStyle = '#ef4444';
@@ -212,6 +231,25 @@ class GameRenderer {
                 }
             }
         }
+
+        // 2b. Render Stage Finish Goal Banner / Flag at far right of map
+        const goalX = (map.cols - 3) * map.tileSize - cameraX;
+        const goalY = (map.rows - 5) * map.tileSize;
+        ctx.save();
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(goalX + 16, goalY, 8, 120); // Flag pole
+        ctx.fillStyle = '#4ade80';
+        ctx.beginPath();
+        ctx.moveTo(goalX + 24, goalY + 10);
+        ctx.lineTo(goalX + 70 + Math.sin(time * 4) * 5, goalY + 30);
+        ctx.lineTo(goalX + 24, goalY + 50);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.font = 'bold 14px Noto Sans KR';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('GOAL 🚩', goalX + 2, goalY - 10);
+        ctx.restore();
 
         // Smog Vents
         map.smogVents.forEach(vent => {

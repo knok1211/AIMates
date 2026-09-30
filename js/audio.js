@@ -127,6 +127,20 @@ class AudioEngine {
         });
     }
 
+    // Sound FX: Game Over Defeat
+    playDefeat() {
+        if (!this.enabled) return;
+        this.init();
+        try {
+            const notes = [380, 320, 260, 200];
+            notes.forEach((freq, idx) => {
+                setTimeout(() => {
+                    this.playTone(freq, 'sawtooth', 0.25, 0.15);
+                }, idx * 110);
+            });
+        } catch (e) {}
+    }
+
     // DJ Effect 1: Beat Drop
     playBeatDrop() {
         if (!this.enabled) return;

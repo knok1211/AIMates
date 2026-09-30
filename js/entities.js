@@ -240,7 +240,11 @@ class GameMap {
     constructor(stageNum) {
         this.stageNum = stageNum;
         this.tileSize = 40;
-        this.cols = 50; // 2000px total map width
+        // Expanded map lengths for longer gameplay
+        if (stageNum === 1) this.cols = 100;      // 4000px total map width
+        else if (stageNum === 2) this.cols = 120; // 4800px total map width
+        else this.cols = 140;                      // 5600px total map width
+        
         this.rows = 18; // 720px map height
         
         this.tiles = Array(this.rows).fill(null).map(() => Array(this.cols).fill(0)); // 0: empty, 1: ground/wall, 2: toxic wastewater, 3: high vent tower, 4: security gate
@@ -260,47 +264,90 @@ class GameMap {
         }
 
         if (stage === 1) {
-            // Stage 1: Factory Outskirts & Entrance
-            // Toxic wastewater puddles
-            for (let c = 12; c <= 16; c++) this.tiles[16][c] = 2;
-            for (let c = 28; c <= 32; c++) this.tiles[16][c] = 2;
+            // Stage 1: Extended Factory Outskirts & Entrance (cols = 100)
+            // Toxic wastewater puddles (unpurified poison hazards)
+            for (let c = 10; c <= 15; c++) this.tiles[16][c] = 2;
+            for (let c = 28; c <= 34; c++) this.tiles[16][c] = 2;
+            for (let c = 48; c <= 55; c++) this.tiles[16][c] = 2;
+            for (let c = 70; c <= 77; c++) this.tiles[16][c] = 2;
+            for (let c = 88; c <= 93; c++) this.tiles[16][c] = 2;
 
-            // Platforms & Gates
-            for (let r = 12; r <= 16; r++) this.tiles[r][20] = 1; // High Wall Gate for Hamdori
-            for (let c = 21; c <= 25; c++) this.tiles[12][c] = 1; // Overhead platform
+            // Wall climb structures & platforms
+            for (let r = 11; r <= 16; r++) this.tiles[r][22] = 3; // High Vent Wall for Hamdori
+            for (let c = 23; c <= 27; c++) this.tiles[11][c] = 1; // Overhead platform
 
-            for (let c = 35; c <= 42; c++) this.tiles[13][c] = 1; // Upper terrace
+            // Security Gate 1
+            for (let r = 13; r <= 16; r++) this.tiles[r][42] = 4;
+            for (let c = 36; c <= 41; c++) this.tiles[13][c] = 1;
 
-            this.smogVents.push({ x: 14 * 40, y: 15 * 40, purified: false });
-            this.smogVents.push({ x: 30 * 40, y: 15 * 40, purified: false });
+            // Middle high terrace
+            for (let r = 9; r <= 16; r++) this.tiles[r][62] = 3;
+            for (let c = 63; c <= 69; c++) this.tiles[9][c] = 1;
+
+            // Final approach platforms
+            for (let c = 79; c <= 86; c++) this.tiles[12][c] = 1;
+
+            // Smog vents
+            this.smogVents.push({ x: 12 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 31 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 51 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 73 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 90 * 40, y: 15 * 40, purified: false });
         } 
         else if (stage === 2) {
-            // Stage 2: Security Corridor & Ventilation Tower
-            for (let r = 5; r <= 16; r++) this.tiles[r][15] = 3; // High Ventilation Tower (climbable wall!)
-            for (let c = 15; c <= 22; c++) this.tiles[5][c] = 1; // Top Vent Deck (Battery spot)
+            // Stage 2: Extended Security Corridor & Ventilation Tower (cols = 120)
+            // Toxic wastewater puddles
+            for (let c = 12; c <= 17; c++) this.tiles[16][c] = 2;
+            for (let c = 32; c <= 38; c++) this.tiles[16][c] = 2;
+            for (let c = 55; c <= 62; c++) this.tiles[16][c] = 2;
+            for (let c = 78; c <= 85; c++) this.tiles[16][c] = 2;
+            for (let c = 100; c <= 108; c++) this.tiles[16][c] = 2;
 
-            // Security Gate (locked until Cable/Ampoule)
-            for (let r = 13; r <= 16; r++) this.tiles[r][32] = 4; // Locked Gate
+            // Ventilation Tower 1
+            for (let r = 4; r <= 16; r++) this.tiles[r][18] = 3; 
+            for (let c = 18; c <= 25; c++) this.tiles[4][c] = 1; 
 
-            for (let c = 24; c <= 31; c++) this.tiles[12][c] = 1;
+            // Security Gate 1
+            for (let r = 13; r <= 16; r++) this.tiles[r][40] = 4; 
+            for (let c = 26; c <= 33; c++) this.tiles[12][c] = 1;
+
+            // Ventilation Tower 2
+            for (let r = 4; r <= 16; r++) this.tiles[r][65] = 3;
+            for (let c = 65; c <= 72; c++) this.tiles[4][c] = 1;
+
+            // Security Gate 2
+            for (let r = 13; r <= 16; r++) this.tiles[r][86] = 4;
+            for (let c = 87; c <= 94; c++) this.tiles[12][c] = 1;
 
             this.smogVents.push({ x: 8 * 40, y: 15 * 40, purified: false });
             this.smogVents.push({ x: 26 * 40, y: 11 * 40, purified: false });
+            this.smogVents.push({ x: 58 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 80 * 40, y: 15 * 40, purified: false });
+            this.smogVents.push({ x: 104 * 40, y: 15 * 40, purified: false });
         }
         else if (stage === 3) {
-            // Stage 3: Central Emission Control Room & Boss Console
+            // Stage 3: Extended Emission Control Room & Boss Arena (cols = 140)
             for (let c = 8; c <= 14; c++) this.tiles[12][c] = 1;
             for (let c = 22; c <= 30; c++) this.tiles[11][c] = 1;
-            for (let c = 36; c <= 44; c++) this.tiles[10][c] = 1;
+            for (let c = 50; c <= 60; c++) this.tiles[10][c] = 1;
+            for (let c = 82; c <= 92; c++) this.tiles[11][c] = 1;
+            for (let c = 110; c <= 120; c++) this.tiles[10][c] = 1;
 
-            // Toxic waste central pit
+            // Toxic wastewater central pits
             for (let c = 15; c <= 21; c++) this.tiles[16][c] = 2;
+            for (let c = 42; c <= 49; c++) this.tiles[16][c] = 2;
+            for (let c = 72; c <= 80; c++) this.tiles[16][c] = 2;
+            for (let c = 100; c <= 108; c++) this.tiles[16][c] = 2;
+            for (let c = 122; c <= 128; c++) this.tiles[16][c] = 2;
 
             // Boss Main Console at end
-            this.consoles.push({ x: 42 * 40, y: 9 * 40, active: false });
+            this.consoles.push({ x: 132 * 40, y: 9 * 40, active: false });
 
             this.smogVents.push({ x: 10 * 40, y: 11 * 40, purified: false });
             this.smogVents.push({ x: 25 * 40, y: 10 * 40, purified: false });
+            this.smogVents.push({ x: 55 * 40, y: 9 * 40, purified: false });
+            this.smogVents.push({ x: 85 * 40, y: 10 * 40, purified: false });
+            this.smogVents.push({ x: 115 * 40, y: 9 * 40, purified: false });
         }
     }
 
@@ -332,6 +379,34 @@ class GameMap {
         });
     }
 
+    checkPoisonCollision(player) {
+        const minC = Math.max(0, Math.floor(player.x / this.tileSize));
+        const maxC = Math.min(this.cols - 1, Math.floor((player.x + player.width) / this.tileSize));
+        const minR = Math.max(0, Math.floor(player.y / this.tileSize));
+        const maxR = Math.min(this.rows - 1, Math.floor((player.y + player.height) / this.tileSize));
+
+        for (let r = minR; r <= maxR; r++) {
+            for (let c = minC; c <= maxC; c++) {
+                // Check toxic wastewater tile (tile 2) that is UNPURIFIED
+                if (this.tiles[r][c] === 2 && !this.purifiedMask[r][c]) {
+                    const tileX = c * this.tileSize;
+                    const tileY = r * this.tileSize + 12; // Liquid surface offset
+                    const tileW = this.tileSize;
+                    const tileH = this.tileSize - 12;
+
+                    // AABB Bounding Box Intersection with 4px inner padding for fine collision feel
+                    if (player.x + 4 < tileX + tileW &&
+                        player.x + player.width - 4 > tileX &&
+                        player.y + 4 < tileY + tileH &&
+                        player.y + player.height > tileY) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     getPurificationPercentage() {
         let purifiedCount = 0;
         let totalTiles = this.cols * this.rows;
@@ -340,7 +415,7 @@ class GameMap {
                 if (this.purifiedMask[r][c]) purifiedCount++;
             }
         }
-        return Math.min(100, Math.round((purifiedCount / (totalTiles * 0.45)) * 100));
+        return Math.min(100, Math.round((purifiedCount / (totalTiles * 0.35)) * 100));
     }
 
     checkWallCollision(x, y, w, h) {
